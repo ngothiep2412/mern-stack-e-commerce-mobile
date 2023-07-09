@@ -1,5 +1,5 @@
 import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   colors,
   defaultStyle,
@@ -33,6 +33,10 @@ const NewProduct = ({ navigation, route }) => {
   const submitHandler = () => {
     console.log(name, description, price, stock, categoryID);
   };
+
+  useEffect(() => {
+    if (route.params?.image) setImage(route.params.image);
+  }, [route.params]);
 
   return (
     <>

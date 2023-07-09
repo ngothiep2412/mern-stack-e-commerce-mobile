@@ -6,7 +6,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { colors, defaultStyle, formHeading } from "../../styles/styles";
 import Header from "../../components/Header";
 import ImageCard from "../../components/ImageCard";
@@ -25,6 +25,13 @@ const ProductImages = ({ navigation, route }) => {
   };
 
   const submitHandler = () => {};
+
+  useEffect(() => {
+    if (route.params?.image) {
+      setImage(route.params.image);
+      setImageChanged(true);
+    }
+  }, [route.params]);
 
   return (
     <View style={{ ...defaultStyle, backgroundColor: colors.color5 }}>
@@ -75,7 +82,7 @@ const ProductImages = ({ navigation, route }) => {
           <TouchableOpacity
             activeOpacity={0.8}
             onPress={() =>
-              NavigationPreloadManager.navigate("camera", {
+              navigation.navigate("camera", {
                 updateProduct: true,
               })
             }

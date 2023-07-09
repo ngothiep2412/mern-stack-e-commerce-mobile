@@ -24,6 +24,7 @@ import AdminOrders from "./screens/Admin/AdminOrders";
 import UpdateProduct from "./screens/Admin/UpdateProduct";
 import NewProduct from "./screens/Admin/NewProduct";
 import ProductImages from "./screens/Admin/ProductImages";
+import CameraComponent from "./screens/CameraComponent";
 
 const Stack = createNativeStackNavigator();
 
@@ -58,6 +59,10 @@ function Main() {
             component={UpdateProfile}
           ></Stack.Screen>
           <Stack.Screen name="orders" component={Orders}></Stack.Screen>
+          <Stack.Screen
+            name="camera"
+            component={CameraComponent}
+          ></Stack.Screen>
 
           {/* Resetting Password */}
           <Stack.Screen

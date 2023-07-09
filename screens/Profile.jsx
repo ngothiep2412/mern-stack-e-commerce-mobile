@@ -1,5 +1,5 @@
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { colors, defaultStyle, formStyles } from "../styles/styles";
 import { Avatar } from "react-native-paper";
 import ButtonBox from "../components/ButtonBox";
@@ -13,7 +13,7 @@ const user = {
 
 const loading = false;
 
-const Profile = ({ navigation }) => {
+const Profile = ({ navigation, route }) => {
   const [avatar, setAvatar] = useState(null);
 
   const logoutHandler = () => {
@@ -42,6 +42,13 @@ const Profile = ({ navigation }) => {
     }
   };
 
+  useEffect(() => {
+    if (route.params?.image) {
+      setAvatar(route.params.image);
+      // dispatch updatePic here
+    }
+  }, [route.params]);
+
   return (
     <>
       <View style={defaultStyle}>
@@ -66,7 +73,7 @@ const Profile = ({ navigation }) => {
 
               <TouchableOpacity
                 onPress={() =>
-                  navigation.navigate("camera", { updatedProfile: true })
+                  navigation.navigate("camera", { updateProfile: true })
                 }
               >
                 <Text style={{ color: colors.color1 }}>Change Photo</Text>

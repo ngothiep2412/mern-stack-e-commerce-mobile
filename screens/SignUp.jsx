@@ -7,7 +7,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   colors,
   defaultImg,
@@ -20,7 +20,7 @@ import Footer from "../components/Footer";
 
 const loading = false;
 
-const SignUp = ({ navigation }) => {
+const SignUp = ({ navigation, route }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [avatar, setAvatar] = useState("");
@@ -36,6 +36,13 @@ const SignUp = ({ navigation }) => {
   const submitHandler = () => {
     alert("yeah");
   };
+
+  useEffect(() => {
+    if (route.params?.image) {
+      setAvatar(route.params.image);
+      // dispatch updatePic here
+    }
+  }, [route.params]);
 
   return (
     <View style={{ flex: 1 }}>
