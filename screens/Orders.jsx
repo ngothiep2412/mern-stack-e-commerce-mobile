@@ -8,7 +8,7 @@ import OrderItem from "../components/OrderItem";
 
 const loading = false;
 
-const orders = [
+export const orders = [
   {
     _id: 1,
     shippingInfo: {

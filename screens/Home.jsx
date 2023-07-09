@@ -16,6 +16,81 @@ import ProductCard from "../components/ProductCard";
 import Footer from "../components/Footer";
 import Heading from "../components/Heading";
 
+export const products = [
+  {
+    price: 123,
+    stock: 2,
+    name: "sample",
+    _id: "1",
+    category: "asdadsadasd",
+    images: [
+      {
+        url: "https://i.ytimg.com/vi/iUrlaSKGaQ0/maxresdefault.jpg",
+      },
+    ],
+  },
+  {
+    price: 123,
+    stock: 22,
+    name: "Macbook",
+    _id: "2",
+    category: "a11sdadsadasd",
+    images: [
+      {
+        url: "https://i.ytimg.com/vi/iUrlaSKGaQ0/maxresdefault.jpg",
+      },
+    ],
+  },
+  {
+    price: 123,
+    stock: 22,
+    name: "Macbook",
+    _id: "3",
+    category: "a11sdadsadasd",
+    images: [
+      {
+        url: "https://i.ytimg.com/vi/iUrlaSKGaQ0/maxresdefault.jpg",
+      },
+    ],
+  },
+  {
+    price: 123,
+    stock: 22,
+    name: "Macbook",
+    _id: "4",
+    category: "a11sdadsadasd",
+    images: [
+      {
+        url: "https://i.ytimg.com/vi/iUrlaSKGaQ0/maxresdefault.jpg",
+      },
+    ],
+  },
+  {
+    price: 123,
+    stock: 22,
+    name: "Macbook",
+    _id: "5",
+    category: "a11sdadsadasd",
+    images: [
+      {
+        url: "https://i.ytimg.com/vi/iUrlaSKGaQ0/maxresdefault.jpg",
+      },
+    ],
+  },
+  {
+    price: 123,
+    stock: 22,
+    name: "Macbook",
+    _id: "6",
+    category: "a11sdadsadasd",
+    images: [
+      {
+        url: "https://i.ytimg.com/vi/iUrlaSKGaQ0/maxresdefault.jpg",
+      },
+    ],
+  },
+];
+
 const Home = () => {
   const navigate = useNavigation();
   const categories = [
@@ -24,30 +99,6 @@ const Home = () => {
     { cateogry: "Men", _id: "3" },
     { cateogry: "Women", _id: "4" },
     { cateogry: "Helicoper", _id: "5" },
-  ];
-  const products = [
-    {
-      price: 123,
-      stock: 2,
-      name: "sample",
-      _id: "1",
-      images: [
-        {
-          url: "https://i.ytimg.com/vi/iUrlaSKGaQ0/maxresdefault.jpg",
-        },
-      ],
-    },
-    {
-      price: 123,
-      stock: 22,
-      name: "Macbook",
-      _id: "2",
-      images: [
-        {
-          url: "https://i.ytimg.com/vi/iUrlaSKGaQ0/maxresdefault.jpg",
-        },
-      ],
-    },
   ];
 
   const [category, setCategory] = useState("");

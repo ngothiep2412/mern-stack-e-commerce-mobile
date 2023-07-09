@@ -21,6 +21,7 @@ const ProductCard = ({
 }) => {
   return (
     <TouchableOpacity
+      style={{ height: 400 }}
       activeOpacity={1}
       onPress={() => navigate.navigate("productdetails", { id })}
     >
@@ -38,8 +39,7 @@ const ProductCard = ({
           justifyContent: "space-between",
           margin: 20,
           borderRadius: 20,
-          height: 400,
-
+          height: "100%",
           backgroundColor: i % 2 === 0 ? colors.color1 : colors.color2,
         }}
       >
