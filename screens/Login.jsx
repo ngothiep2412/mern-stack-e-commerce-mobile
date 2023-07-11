@@ -15,15 +15,19 @@ import {
 } from "../styles/styles";
 import { TextInput } from "react-native-paper";
 import Footer from "../components/Footer";
-
-const loading = false;
+import { useDispatch } from "react-redux";
+import { login } from "../redux/actions/userAction";
+import { useMessageAndErrorUser } from "../utils/hooks";
 
 const Login = ({ navigation }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
+  const dispatch = useDispatch();
+  const loading = useMessageAndErrorUser(navigation, dispatch, "profile");
+
   const submitHandler = () => {
-    alert("yeah");
+    dispatch(login(email, password));
   };
 
   return (
