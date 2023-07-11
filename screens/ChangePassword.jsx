@@ -1,86 +1,65 @@
-import {
-  ActivityIndicator,
-  Pressable,
-  StyleSheet,
-  Text,
-  View,
-} from "react-native";
+import { View, Text } from "react-native";
 import React, { useState } from "react";
 import {
   colors,
   defaultStyle,
-  formStyles,
+  formHeading,
   inputOptions,
+  formStyles as styles,
 } from "../styles/styles";
-import { TextInput } from "react-native-paper";
+import { Button, TextInput } from "react-native-paper";
 import Header from "../components/Header";
+import { useDispatch } from "react-redux";
+import { updatePassword } from "../redux/actions/otherAction";
+import { useMessageAndErrorOther } from "../utils/hooks";
 
-const loading = false;
-
-const ChangePassword = ({ navigation }) => {
+const ChangePassword = () => {
   const [oldPassword, setOldPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
+  const dispatch = useDispatch();
+  const loading = useMessageAndErrorOther(dispatch);
 
   const submitHandler = () => {
-    alert("yeah");
+    dispatch(updatePassword(oldPassword, newPassword));
+    setOldPassword("");
+    setNewPassword("");
   };
-
   return (
     <View style={defaultStyle}>
-      <Header back={true}></Header>
-
+      <Header back={true} />
       {/* Heading */}
-
-      <View
-        style={{
-          marginBottom: 20,
-          height: 50,
-          backgroundColor: colors.color3,
-          width: "100%",
-          marginTop: 60,
-          justifyContent: "center",
-          borderRadius: 10,
-          overflow: "hidden",
-        }}
-      >
-        <Text style={formStyles.headingText}>Change Password</Text>
+      <View style={{ marginBottom: 20, paddingTop: 70 }}>
+        <Text style={formHeading}>Change Password</Text>
       </View>
 
-      <View style={[formStyles.container, { flex: 1 }]}>
+      <View style={styles.container}>
         <TextInput
           {...inputOptions}
           placeholder="Old Password"
           secureTextEntry={true}
           value={oldPassword}
           onChangeText={setOldPassword}
-        ></TextInput>
-
+        />
         <TextInput
           {...inputOptions}
           placeholder="New Password"
           secureTextEntry={true}
           value={newPassword}
           onChangeText={setNewPassword}
-        ></TextInput>
+        />
 
-        <Pressable
-          style={formStyles.btn}
+        <Button
+          loading={loading}
+          textColor={colors.color2}
           disabled={oldPassword === "" || newPassword === ""}
+          style={styles.btn}
           onPress={submitHandler}
         >
-          {loading ? (
-            <ActivityIndicator color="#000000" />
-          ) : (
-            <Text style={{ color: colors.color2, textAlign: "center" }}>
-              Change
-            </Text>
-          )}
-        </Pressable>
+          Change
+        </Button>
       </View>
     </View>
   );
 };
 
 export default ChangePassword;
-
-const styles = StyleSheet.create({});

@@ -1,10 +1,10 @@
 import {
-  KeyboardAvoidingView,
+  View,
+  Text,
   ScrollView,
   StyleSheet,
-  Text,
   TouchableOpacity,
-  View,
+  KeyboardAvoidingView,
 } from "react-native";
 import React, { useState } from "react";
 import {
@@ -15,34 +15,45 @@ import {
 } from "../../styles/styles";
 import Header from "../../components/Header";
 import { Avatar, Button, TextInput } from "react-native-paper";
+import { useMessageAndErrorOther, useSetCategories } from "../../utils/hooks";
+import { useIsFocused } from "@react-navigation/native";
+import { useDispatch } from "react-redux";
+import { addCategory, deleteCategory } from "../../redux/actions/otherAction";
 
-const categories = [
-  { name: "Laptop", _id: "1" },
-  { name: "Laptop", _id: "2" },
-];
-
-const Categories = () => {
+const Categories = ({ navigation }) => {
   const [category, setCategory] = useState("");
+  const [categories, setCategories] = useState([]);
+
+  const isFocused = useIsFocused();
+  const dispatch = useDispatch();
+
+  useSetCategories(setCategories, isFocused);
+
+  const loading = useMessageAndErrorOther(dispatch, navigation, "adminpanel");
 
   const deleteHandler = (id) => {
-    console.log(`Deleting Category, ${id}`);
+    dispatch(deleteCategory(id));
   };
 
-  const submitHandler = () => {};
-
-  const loading = false;
+  const submitHandler = () => {
+    dispatch(addCategory(category));
+  };
 
   return (
     <KeyboardAvoidingView behavior="padding" style={{ flex: 1 }}>
       <View style={{ ...defaultStyle, backgroundColor: colors.color5 }}>
-        <Header back={true}></Header>
+        <Header back={true} />
 
         {/* Heading */}
         <View style={{ marginBottom: 20, paddingTop: 70 }}>
           <Text style={formHeading}>Categories</Text>
         </View>
 
-        <ScrollView style={{ marginBottom: 20 }}>
+        <ScrollView
+          style={{
+            marginBottom: 20,
+          }}
+        >
           <View
             style={{
               backgroundColor: colors.color2,
@@ -52,11 +63,11 @@ const Categories = () => {
           >
             {categories.map((i) => (
               <CategoryCard
-                name={i.name}
-                key={i._id}
+                name={i.category}
                 id={i._id}
+                key={i._id}
                 deleteHandler={deleteHandler}
-              ></CategoryCard>
+              />
             ))}
           </View>
         </ScrollView>
@@ -67,13 +78,17 @@ const Categories = () => {
             placeholder="Category"
             value={category}
             onChangeText={setCategory}
-          ></TextInput>
+          />
 
           <Button
             textColor={colors.color2}
-            style={{ backgroundColor: colors.color1, margin: 20, padding: 6 }}
-            disabled={category === ""}
+            style={{
+              backgroundColor: colors.color1,
+              margin: 20,
+              padding: 6,
+            }}
             loading={loading}
+            disabled={!category}
             onPress={submitHandler}
           >
             Add
@@ -84,8 +99,6 @@ const Categories = () => {
   );
 };
 
-export default Categories;
-
 const CategoryCard = ({ name, id, deleteHandler }) => (
   <View style={styles.cardContainer}>
     <Text style={styles.cardText}>{name}</Text>
@@ -93,15 +106,27 @@ const CategoryCard = ({ name, id, deleteHandler }) => (
       <Avatar.Icon
         icon={"delete"}
         size={30}
-        style={{ backgroundColor: colors.color1 }}
-      ></Avatar.Icon>
+        style={{
+          backgroundColor: colors.color1,
+        }}
+      />
     </TouchableOpacity>
   </View>
 );
 
+export default Categories;
+
 const styles = StyleSheet.create({
+  container: {
+    padding: 20,
+    elevation: 10,
+    borderRadius: 10,
+    backgroundColor: colors.color3,
+  },
+
   cardContainer: {
     backgroundColor: colors.color2,
+    elevation: 5,
     borderColor: "#EBEBEB",
     shadowColor: "black",
     borderRadius: 8,
@@ -120,11 +145,5 @@ const styles = StyleSheet.create({
     fontWeight: "600",
     textTransform: "uppercase",
     letterSpacing: 1,
-  },
-  container: {
-    padding: 10,
-    elevation: 10,
-    borderRadius: 10,
-    backgroundColor: colors.color3,
   },
 });

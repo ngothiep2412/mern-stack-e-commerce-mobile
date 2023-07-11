@@ -1,11 +1,11 @@
-import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { View, Text, TouchableOpacity, StyleSheet, Image } from "react-native";
 import React, { useState } from "react";
 import { colors } from "../styles/styles";
-import MyModal from "./MyModal";
+import MyModal from "../components/MyModal";
 
 const ProductListItem = ({
   navigate,
-  deleteProductHandler,
+  deleteHandler,
   i,
   id,
   price,
@@ -30,31 +30,53 @@ const ProductListItem = ({
           }}
         >
           <Image
-            source={{ uri: imgSrc }}
+            source={{
+              uri: imgSrc,
+            }}
             style={{
               width: 40,
               height: 40,
               resizeMode: "contain",
-              // marginRight: 10,
             }}
-          ></Image>
+          />
 
-          <Text style={{ width: 40, color: colors.color2 }} numberOfLines={1}>
-            {price}$
-          </Text>
           <Text
-            style={{ maxWidth: 50, color: colors.color2 }}
+            style={{
+              width: 60,
+              color: colors.color2,
+            }}
+            numberOfLines={1}
+          >
+            ₹{price}
+          </Text>
+
+          <Text
+            style={{
+              maxWidth: 120,
+              color: colors.color2,
+            }}
             numberOfLines={1}
           >
             {name}
           </Text>
+
           <Text
-            style={{ width: 60, color: colors.color2, textAlign: "center" }}
+            style={{
+              width: 60,
+              color: colors.color2,
+            }}
             numberOfLines={1}
           >
             {category}
           </Text>
-          <Text style={{ width: 40, color: colors.color2 }} numberOfLines={1}>
+
+          <Text
+            style={{
+              width: 40,
+              color: colors.color2,
+            }}
+            numberOfLines={1}
+          >
             {stock}
           </Text>
         </View>
@@ -63,16 +85,14 @@ const ProductListItem = ({
       {openModal && (
         <MyModal
           id={id}
-          deleteHandler={deleteProductHandler}
+          deleteHandler={deleteHandler}
           navigate={navigate}
           setOpenModal={setOpenModal}
-        ></MyModal>
+        />
       )}
     </>
   );
 };
-
-export default ProductListItem;
 
 const styles = StyleSheet.create({
   container: {
@@ -85,3 +105,5 @@ const styles = StyleSheet.create({
     marginVertical: 10,
   },
 });
+
+export default ProductListItem;

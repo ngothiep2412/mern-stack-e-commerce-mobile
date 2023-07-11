@@ -1,47 +1,78 @@
-import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
+import {
+  View,
+  Text,
+  ScrollView,
+  TouchableOpacity,
+  Pressable,
+  KeyboardAvoidingView,
+} from "react-native";
 import React, { useEffect, useState } from "react";
+import Header from "../../components/Header";
 import {
   colors,
   defaultStyle,
   formHeading,
   inputOptions,
-  inputStyling,
 } from "../../styles/styles";
-import Header from "../../components/Header";
-import Loader from "../../components/Loader";
 import { Avatar, Button, TextInput } from "react-native-paper";
 import SelectComponent from "../../components/SelectComponent";
-import { TouchableOpacity } from "react-native";
+import { useSetCategories, useMessageAndErrorOther } from "../../utils/hooks";
+import { useIsFocused } from "@react-navigation/native";
+import { useDispatch } from "react-redux";
+import mime from "mime";
+import { createProduct } from "../../redux/actions/otherAction";
 
 const NewProduct = ({ navigation, route }) => {
-  const loadingOther = false;
+  const isFocused = useIsFocused();
+  const dispatch = useDispatch();
+  const [visible, setVisible] = useState(false);
 
   const [image, setImage] = useState("");
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [price, setPrice] = useState("");
   const [stock, setStock] = useState("");
-  const [category, setCategory] = useState("Laptop");
-  const [categoryID, setCategoryID] = useState("");
-  const [categories, setCategories] = useState([
-    { _id: "C1", category: "Laptop" },
-    { _id: "C2", category: "Macbook" },
-    { _id: "C3", category: "Iphone" },
-  ]);
-  const [visible, setVisible] = useState(false);
+  const [category, setCategory] = useState("Choose Category");
+  const [categoryID, setCategoryID] = useState(undefined);
+  const [categories, setCategories] = useState([]);
+
+  useSetCategories(setCategories, isFocused);
+
+  const disableBtnCondition =
+    !name || !description || !price || !stock || !image;
 
   const submitHandler = () => {
-    console.log(name, description, price, stock, categoryID);
+    const myForm = new FormData();
+    myForm.append("name", name);
+    myForm.append("description", description);
+    myForm.append("price", price);
+    myForm.append("stock", stock);
+    myForm.append("file", {
+      uri: image,
+      type: mime.getType(image),
+      name: image.split("/").pop(),
+    });
+
+    if (categoryID) myForm.append("category", categoryID);
+
+    dispatch(createProduct(myForm));
   };
+
+  const loading = useMessageAndErrorOther(dispatch, navigation, "adminpanel");
 
   useEffect(() => {
     if (route.params?.image) setImage(route.params.image);
   }, [route.params]);
 
   return (
-    <>
-      <View style={{ ...defaultStyle, backgroundColor: colors.color5 }}>
-        <Header back={true}></Header>
+    <KeyboardAvoidingView behavior="padding" style={{ flex: 1 }}>
+      <View
+        style={{
+          ...defaultStyle,
+          backgroundColor: colors.color5,
+        }}
+      >
+        <Header back={true} />
 
         {/* Heading */}
         <View style={{ marginBottom: 20, paddingTop: 70 }}>
@@ -56,7 +87,12 @@ const NewProduct = ({ navigation, route }) => {
             backgroundColor: colors.color3,
           }}
         >
-          <View style={{ justifyContent: "center", height: 650 }}>
+          <View
+            style={{
+              justifyContent: "center",
+              height: 650,
+            }}
+          >
             <View
               style={{
                 width: 80,
@@ -67,9 +103,13 @@ const NewProduct = ({ navigation, route }) => {
             >
               <Avatar.Image
                 size={80}
-                style={{ backgroundColor: colors.color1 }}
-                source={{ uri: image ? image : null }}
-              ></Avatar.Image>
+                style={{
+                  backgroundColor: colors.color1,
+                }}
+                source={{
+                  uri: image ? image : null,
+                }}
+              />
               <TouchableOpacity
                 onPress={() =>
                   navigation.navigate("camera", { newProduct: true })
@@ -85,7 +125,7 @@ const NewProduct = ({ navigation, route }) => {
                     bottom: 0,
                     right: -5,
                   }}
-                ></Avatar.Icon>
+                />
               </TouchableOpacity>
             </View>
 
@@ -94,28 +134,28 @@ const NewProduct = ({ navigation, route }) => {
               placeholder="Name"
               value={name}
               onChangeText={setName}
-            ></TextInput>
-
+            />
             <TextInput
               {...inputOptions}
               placeholder="Description"
               value={description}
               onChangeText={setDescription}
-            ></TextInput>
+            />
+
             <TextInput
               {...inputOptions}
               placeholder="Price"
-              value={price}
               keyboardType="number-pad"
+              value={price}
               onChangeText={setPrice}
-            ></TextInput>
+            />
             <TextInput
               {...inputOptions}
+              keyboardType="number-pad"
               placeholder="Stock"
               value={stock}
-              keyboardType="number-pad"
               onChangeText={setStock}
-            ></TextInput>
+            />
 
             <Pressable
               style={{
@@ -140,8 +180,8 @@ const NewProduct = ({ navigation, route }) => {
                 padding: 6,
               }}
               onPress={submitHandler}
-              loading={loadingOther}
-              disabled={loadingOther}
+              loading={loading}
+              disabled={disableBtnCondition || loading}
             >
               Create
             </Button>
@@ -155,11 +195,9 @@ const NewProduct = ({ navigation, route }) => {
         setCategory={setCategory}
         visible={visible}
         setVisible={setVisible}
-      ></SelectComponent>
-    </>
+      />
+    </KeyboardAvoidingView>
   );
 };
 
 export default NewProduct;
-
-const styles = StyleSheet.create({});

@@ -1,81 +1,40 @@
-import { ScrollView, StyleSheet, Text, View } from "react-native";
+import { View, Text, ScrollView } from "react-native";
 import React from "react";
-import { colors, defaultStyle, formStyles } from "../styles/styles";
+import { colors, defaultStyle, formHeading } from "../styles/styles";
 import Header from "../components/Header";
 import Loader from "../components/Loader";
 import { Headline } from "react-native-paper";
 import OrderItem from "../components/OrderItem";
-
-const loading = false;
-
-export const orders = [
-  {
-    _id: 1,
-    shippingInfo: {
-      address: "District 9",
-      city: "Ho Chi Minh",
-      country: "Viet Nam",
-      pinCode: "100000",
-    },
-    createdAt: "08-07-2023T2343",
-    orderStatus: "Processing",
-    paymentMethod: "COD",
-    totalAmount: 200000,
-  },
-  {
-    _id: 2,
-    shippingInfo: {
-      address: "District 9",
-      city: "Ho Chi Minh",
-      country: "Viet Nam",
-      pinCode: "100000",
-    },
-    createdAt: "08-07-2023T2343",
-    orderStatus: "Processing",
-    paymentMethod: "COD",
-    totalAmount: 200000,
-  },
-  {
-    _id: 3,
-    shippingInfo: {
-      address: "District 9",
-      city: "Ho Chi Minh",
-      country: "Viet Nam",
-      pinCode: "100000",
-    },
-    createdAt: "08-07-2023T2343",
-    orderStatus: "Processing",
-    paymentMethod: "COD",
-    totalAmount: 200000,
-  },
-];
+import { useGetOrders } from "../utils/hooks";
+import { useIsFocused } from "@react-navigation/native";
 
 const Orders = () => {
+  const isFocused = useIsFocused();
+  const { loading, orders } = useGetOrders(isFocused);
+
   return (
-    <View style={{ ...defaultStyle, backgroundColor: colors.color5 }}>
-      <Header back={true}></Header>
+    <View
+      style={{
+        ...defaultStyle,
+        backgroundColor: colors.color5,
+      }}
+    >
+      <Header back={true} />
 
       {/* Heading */}
-
-      <View
-        style={{
-          marginBottom: 20,
-          height: 50,
-          backgroundColor: colors.color3,
-          width: "100%",
-          marginTop: 60,
-          justifyContent: "center",
-          borderRadius: 10,
-          overflow: "hidden",
-        }}
-      >
-        <Text style={formStyles.headingText}>Orders</Text>
+      <View style={{ marginBottom: 20, paddingTop: 70 }}>
+        <Text style={formHeading}>Orders</Text>
       </View>
 
       {loading ? (
-        <Loader></Loader>
+        <Loader />
       ) : (
-        <View style={{ padding: 10, flex: 1 }}>
+        <View
+          style={{
+            padding: 10,
+            flex: 1,
+          }}
+        >
           <ScrollView showsVerticalScrollIndicator={false}>
             {orders.length > 0 ? (
               orders.map((item, index) => (
@@ -87,10 +46,8 @@ const Orders = () => {
                   status={item.orderStatus}
                   paymentMethod={item.paymentMethod}
                   orderedOn={item.createdAt.split("T")[0]}
-                  address={`${item.shippingInfo.address}, ${item.shippingInfo.city}, ${item.shippingInfo.country}, ${item.shippingInfo.pinCode}`}
-                  //   admin={true}
-                  //   loading={true}
-                ></OrderItem>
+                  address={`${item.shippingInfo.address}, ${item.shippingInfo.city}, ${item.shippingInfo.country} ${item.shippingInfo.pinCode}`}
+                />
               ))
             ) : (
               <Headline style={{ textAlign: "center" }}>No Orders Yet</Headline>
@@ -103,5 +60,3 @@ const Orders = () => {
 };
 
 export default Orders;
-
-const styles = StyleSheet.create({});

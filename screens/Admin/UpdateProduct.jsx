@@ -1,5 +1,6 @@
-import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
-import React, { useState } from "react";
+import { View, Text, ScrollView, Pressable } from "react-native";
+import React, { useEffect, useState } from "react";
+import Header from "../../components/Header";
 import {
   colors,
   defaultStyle,
@@ -7,48 +8,67 @@ import {
   inputOptions,
   inputStyling,
 } from "../../styles/styles";
-import Header from "../../components/Header";
 import Loader from "../../components/Loader";
-import { Button, TextInput } from "react-native-paper";
+import { Avatar, Button, TextInput } from "react-native-paper";
 import SelectComponent from "../../components/SelectComponent";
+import { useMessageAndErrorOther, useSetCategories } from "../../utils/hooks";
+import { useIsFocused } from "@react-navigation/native";
+import { useDispatch, useSelector } from "react-redux";
+import { getProductDetails } from "../../redux/actions/productAction";
+import { updateProduct } from "../../redux/actions/otherAction";
 
 const UpdateProduct = ({ navigation, route }) => {
-  const loading = false;
-  const loadingOther = false;
+  const isFocused = useIsFocused();
+  const dispatch = useDispatch();
+  const [visible, setVisible] = useState(false);
 
-  const images = [
-    {
-      url: "https://encrypted-tbn1.gstatic.com/shopping?q=tbn:ANd9GcSWjT2WwCnFtNM9TSkZYCrVznfX7VYNPEwH3khtL5ppQGR6UfD8j3WmukRI2yKnaNUeUvxYLuOINPll-HqJ6u1GjVS5R6Ltjw&usqp=CAE",
-      _id: 1,
-    },
-    {
-      url: "https://encrypted-tbn1.gstatic.com/shopping?q=tbn:ANd9GcSWjT2WwCnFtNM9TSkZYCrVznfX7VYNPEwH3khtL5ppQGR6UfD8j3WmukRI2yKnaNUeUvxYLuOINPll-HqJ6u1GjVS5R6Ltjw&usqp=CAE",
-      _id: 2,
-    },
-  ];
+  const { product, loading } = useSelector((state) => state.product);
 
   const [id] = useState(route.params.id);
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [price, setPrice] = useState("");
   const [stock, setStock] = useState("");
-  const [category, setCategory] = useState("Laptop");
+  const [category, setCategory] = useState("");
   const [categoryID, setCategoryID] = useState("");
-  const [categories, setCategories] = useState([
-    { _id: "C1", category: "Laptop" },
-    { _id: "C2", category: "Macbook" },
-    { _id: "C3", category: "Iphone" },
-  ]);
-  const [visible, setVisible] = useState(false);
+  const [categories, setCategories] = useState([]);
+
+  useSetCategories(setCategories, isFocused);
 
   const submitHandler = () => {
-    console.log(name, description, price, stock, categoryID);
+    dispatch(updateProduct(id, name, description, price, stock, categoryID));
   };
+
+  const loadingOther = useMessageAndErrorOther(
+    dispatch,
+    navigation,
+    "adminpanel"
+  );
+
+  useEffect(() => {
+    dispatch(getProductDetails(id));
+  }, [dispatch, id, isFocused]);
+
+  useEffect(() => {
+    if (product) {
+      setName(product.name);
+      setDescription(product.description);
+      setPrice(String(product.price));
+      setStock(String(product.stock));
+      setCategory(product.category?.category);
+      setCategoryID(product.category?._id);
+    }
+  }, [product]);
 
   return (
     <>
-      <View style={{ ...defaultStyle, backgroundColor: colors.color5 }}>
-        <Header back={true}></Header>
+      <View
+        style={{
+          ...defaultStyle,
+          backgroundColor: colors.color5,
+        }}
+      >
+        <Header back={true} />
 
         {/* Heading */}
         <View style={{ marginBottom: 20, paddingTop: 70 }}>
@@ -56,7 +76,7 @@ const UpdateProduct = ({ navigation, route }) => {
         </View>
 
         {loading ? (
-          <Loader></Loader>
+          <Loader />
         ) : (
           <ScrollView
             style={{
@@ -66,14 +86,43 @@ const UpdateProduct = ({ navigation, route }) => {
               backgroundColor: colors.color3,
             }}
           >
-            <View style={{ justifyContent: "center", height: 650 }}>
+            <View
+              style={{
+                justifyContent: "center",
+                height: 650,
+              }}
+            >
+              <View
+                style={{
+                  width: 80,
+                  height: 80,
+                  alignSelf: "center",
+                  marginBottom: 20,
+                }}
+              >
+                <Avatar.Image
+                  size={80}
+                  style={{
+                    backgroundColor: colors.color1,
+                  }}
+                  source={{
+                    uri: product?.images[0]?.url
+                      ? product?.images[0]?.url
+                      : null,
+                  }}
+                />
+              </View>
+
               <Button
                 onPress={() =>
-                  navigation.navigate("productimages", { id, images })
+                  navigation.navigate("productimages", {
+                    id,
+                    images: product.images,
+                  })
                 }
                 textColor={colors.color1}
               >
-                Mange Images
+                Manage Images
               </Button>
 
               <TextInput
@@ -81,28 +130,28 @@ const UpdateProduct = ({ navigation, route }) => {
                 placeholder="Name"
                 value={name}
                 onChangeText={setName}
-              ></TextInput>
-
+              />
               <TextInput
                 {...inputOptions}
                 placeholder="Description"
                 value={description}
                 onChangeText={setDescription}
-              ></TextInput>
+              />
+
               <TextInput
                 {...inputOptions}
-                keyboardType="number-pad"
                 placeholder="Price"
+                keyboardType="number-pad"
                 value={price}
                 onChangeText={setPrice}
-              ></TextInput>
+              />
               <TextInput
                 {...inputOptions}
-                keyboardType="number-pad"
                 placeholder="Stock"
                 value={stock}
+                keyboardType="number-pad"
                 onChangeText={setStock}
-              ></TextInput>
+              />
 
               <Pressable
                 style={{
@@ -143,11 +192,9 @@ const UpdateProduct = ({ navigation, route }) => {
         setCategory={setCategory}
         visible={visible}
         setVisible={setVisible}
-      ></SelectComponent>
+      />
     </>
   );
 };
 
 export default UpdateProduct;
-
-const styles = StyleSheet.create({});

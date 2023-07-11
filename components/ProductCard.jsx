@@ -1,13 +1,7 @@
-import {
-  Image,
-  Pressable,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from "react-native";
+import { View, Text, TouchableOpacity, Image } from "react-native";
 import React from "react";
 import { colors } from "../styles/styles";
+import { Button } from "react-native-paper";
 
 const ProductCard = ({
   stock,
@@ -15,7 +9,7 @@ const ProductCard = ({
   price,
   image,
   id,
-  addToCartHandler,
+  addToCardHandler,
   i,
   navigate,
 }) => {
@@ -27,8 +21,6 @@ const ProductCard = ({
     >
       <View
         style={{
-          width: 220,
-          alignItems: "center",
           borderColor: "#EBEBEB",
           shadowColor: "black",
           borderRadius: 8,
@@ -36,15 +28,19 @@ const ProductCard = ({
           shadowOffset: { width: 0, height: 2 },
           borderWidth: 0.5,
           shadowOpacity: 0.15,
+          width: 250,
+          alignItems: "center",
           justifyContent: "space-between",
           margin: 20,
           borderRadius: 20,
-          height: "100%",
+          height: 400,
           backgroundColor: i % 2 === 0 ? colors.color1 : colors.color2,
         }}
       >
         <Image
-          source={{ uri: image }}
+          source={{
+            uri: image,
+          }}
           style={{
             width: "100%",
             height: 200,
@@ -53,7 +49,7 @@ const ProductCard = ({
             left: 50,
             top: 105,
           }}
-        ></Image>
+        />
 
         <View
           style={{
@@ -69,48 +65,40 @@ const ProductCard = ({
               color: i % 2 === 0 ? colors.color2 : colors.color3,
               fontSize: 25,
               fontWeight: "300",
+              width: "60%",
             }}
           >
             {name}
           </Text>
+
           <Text
             numberOfLines={2}
             style={{
               color: i % 2 === 0 ? colors.color2 : colors.color3,
-              fontSize: 25,
+              fontSize: 20,
               fontWeight: "700",
             }}
           >
-            {price}
+            ₹{price}
           </Text>
         </View>
+
         <TouchableOpacity
           style={{
             backgroundColor: i % 2 === 0 ? colors.color2 : colors.color3,
             borderRadius: 0,
+            paddingVertical: 5,
             borderBottomRightRadius: 20,
             borderBottomLeftRadius: 20,
             width: "100%",
           }}
         >
-          <Pressable
-            onPress={() => addToCartHandler(id, stock)}
-            style={{
-              alignItems: "center",
-              justifyContent: "center",
-              height: 40,
-            }}
+          <Button
+            onPress={() => addToCardHandler(id, name, price, image, stock)}
+            textColor={i % 2 === 0 ? colors.color1 : colors.color2}
           >
-            <Text
-              style={{
-                fontSize: 15,
-                fontWeight: "400",
-                color: i % 2 === 0 ? colors.color1 : colors.color2,
-              }}
-            >
-              Add To Cart
-            </Text>
-          </Pressable>
+            Add To Cart
+          </Button>
         </TouchableOpacity>
       </View>
     </TouchableOpacity>
@@ -118,5 +106,3 @@ const ProductCard = ({
 };
 
 export default ProductCard;
-
-const styles = StyleSheet.create({});

@@ -1,7 +1,7 @@
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import React from "react";
+import React, { useEffect } from "react";
 import { SafeAreaView, Text, View } from "react-native";
 import Home from "./screens/Home";
 import ProductDetail from "./screens/ProductDetail";
@@ -19,20 +19,27 @@ import ChangePassword from "./screens/ChangePassword";
 import Orders from "./screens/Orders";
 import AdminPanel from "./screens/Admin/AdminPanel";
 import Categories from "./screens/Admin/Categories";
-import AdminOrder from "./screens/Admin/AdminOrders";
 import AdminOrders from "./screens/Admin/AdminOrders";
 import UpdateProduct from "./screens/Admin/UpdateProduct";
 import NewProduct from "./screens/Admin/NewProduct";
 import ProductImages from "./screens/Admin/ProductImages";
 import CameraComponent from "./screens/CameraComponent";
+import { useDispatch, useSelector } from "react-redux";
+import { loadUser } from "./redux/actions/userAction";
 
 const Stack = createNativeStackNavigator();
 
 function Main() {
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    dispatch(loadUser());
+  }, [dispatch]);
+
   return (
     <NavigationContainer>
       <Stack.Navigator
-        initialRouteName="Home"
+        initialRouteName="home"
         screenOptions={{ headerShown: false }}
       >
         <Stack.Group>

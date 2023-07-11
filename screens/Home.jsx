@@ -1,117 +1,68 @@
-import {
-  View,
-  Text,
-  TouchableOpacity,
-  Pressable,
-  ScrollView,
-} from "react-native";
-import React, { useState } from "react";
-import { useNavigation } from "@react-navigation/native";
-import { Avatar } from "react-native-paper";
-
-import { colors, defaultStyle } from "../styles/styles";
+import { View, Text, TouchableOpacity, ScrollView } from "react-native";
+import React, { useEffect, useState } from "react";
+import { defaultStyle, colors } from "../styles/styles";
 import Header from "../components/Header";
+import { Avatar, Button } from "react-native-paper";
 import SearchModal from "../components/SearchModal";
 import ProductCard from "../components/ProductCard";
+import { useIsFocused, useNavigation } from "@react-navigation/native";
 import Footer from "../components/Footer";
 import Heading from "../components/Heading";
-
-export const products = [
-  {
-    price: 123,
-    stock: 2,
-    name: "sample",
-    _id: "1",
-    category: "asdadsadasd",
-    images: [
-      {
-        url: "https://i.ytimg.com/vi/iUrlaSKGaQ0/maxresdefault.jpg",
-      },
-    ],
-  },
-  {
-    price: 123,
-    stock: 22,
-    name: "Macbook",
-    _id: "2",
-    category: "a11sdadsadasd",
-    images: [
-      {
-        url: "https://i.ytimg.com/vi/iUrlaSKGaQ0/maxresdefault.jpg",
-      },
-    ],
-  },
-  {
-    price: 123,
-    stock: 22,
-    name: "Macbook",
-    _id: "3",
-    category: "a11sdadsadasd",
-    images: [
-      {
-        url: "https://i.ytimg.com/vi/iUrlaSKGaQ0/maxresdefault.jpg",
-      },
-    ],
-  },
-  {
-    price: 123,
-    stock: 22,
-    name: "Macbook",
-    _id: "4",
-    category: "a11sdadsadasd",
-    images: [
-      {
-        url: "https://i.ytimg.com/vi/iUrlaSKGaQ0/maxresdefault.jpg",
-      },
-    ],
-  },
-  {
-    price: 123,
-    stock: 22,
-    name: "Macbook",
-    _id: "5",
-    category: "a11sdadsadasd",
-    images: [
-      {
-        url: "https://i.ytimg.com/vi/iUrlaSKGaQ0/maxresdefault.jpg",
-      },
-    ],
-  },
-  {
-    price: 123,
-    stock: 22,
-    name: "Macbook",
-    _id: "6",
-    category: "a11sdadsadasd",
-    images: [
-      {
-        url: "https://i.ytimg.com/vi/iUrlaSKGaQ0/maxresdefault.jpg",
-      },
-    ],
-  },
-];
+import { useDispatch, useSelector } from "react-redux";
+import { getAllProducts } from "../redux/actions/productAction";
+import { useSetCategories } from "../utils/hooks";
+import { Toast } from "react-native-toast-message/lib/src/Toast";
 
 const Home = () => {
-  const navigate = useNavigation();
-  const categories = [
-    { cateogry: "Nice", _id: "1" },
-    { cateogry: "Football", _id: "2" },
-    { cateogry: "Men", _id: "3" },
-    { cateogry: "Women", _id: "4" },
-    { cateogry: "Helicoper", _id: "5" },
-  ];
-
   const [category, setCategory] = useState("");
   const [activeSearch, setActiveSearch] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+  const [categories, setCategories] = useState([]);
+
+  const navigate = useNavigation();
+  const dispatch = useDispatch();
+  const isFocused = useIsFocused();
+
+  const { products } = useSelector((state) => state.product);
 
   const categoryButtonHandler = (id) => {
     setCategory(id);
   };
 
-  const addToCartHandler = (id, stock) => {
-    console.log("Add to cart " + id);
+  const addToCardHandler = (id, name, price, image, stock) => {
+    if (stock === 0)
+      return Toast.show({
+        type: "error",
+        text1: "Out Of Stock",
+      });
+    dispatch({
+      type: "addToCart",
+      payload: {
+        product: id,
+        name,
+        price,
+        image,
+        stock,
+        quantity: 1,
+      },
+    });
+    Toast.show({
+      type: "success",
+      text1: "Added To Cart",
+    });
   };
+
+  useSetCategories(setCategories, isFocused);
+
+  useEffect(() => {
+    const timeOutId = setTimeout(() => {
+      dispatch(getAllProducts(searchQuery, category));
+    }, 500);
+
+    return () => {
+      clearTimeout(timeOutId);
+    };
+  }, [dispatch, searchQuery, category, isFocused]);
 
   return (
     <>
@@ -121,10 +72,12 @@ const Home = () => {
           setSearchQuery={setSearchQuery}
           setActiveSearch={setActiveSearch}
           products={products}
-        ></SearchModal>
+        />
       )}
       <View style={defaultStyle}>
         <Header />
+
+        {/* Heading Row */}
         <View
           style={{
             paddingTop: 70,
@@ -134,40 +87,45 @@ const Home = () => {
           }}
         >
           {/* Heading */}
-          <Heading text1="Our" text2="Products"></Heading>
+          <Heading text1="Our" text2="Products" />
 
           {/* Search Bar */}
+
           <View>
             <TouchableOpacity onPress={() => setActiveSearch((prev) => !prev)}>
               <Avatar.Icon
                 icon={"magnify"}
                 size={50}
-                color={"white"}
-                style={{
-                  backgroundColor: colors.color1,
-                  elevation: 12,
-                }}
+                color={"gray"}
+                style={{ backgroundColor: colors.color2, elevation: 12 }}
               />
             </TouchableOpacity>
           </View>
         </View>
 
         {/* Categories */}
-        <View style={{ flexDirection: "row", height: 80 }}>
+
+        <View
+          style={{
+            flexDirection: "row",
+            height: 80,
+          }}
+        >
           <ScrollView
             horizontal
-            contentContainerStyle={{ alignItems: "center" }}
+            contentContainerStyle={{
+              alignItems: "center",
+            }}
             showsHorizontalScrollIndicator={false}
           >
             {categories.map((item, index) => (
-              <Pressable
+              <Button
                 key={item._id}
                 style={{
                   backgroundColor:
                     category === item._id ? colors.color1 : colors.color5,
                   borderRadius: 100,
                   margin: 5,
-                  padding: 20,
                 }}
                 onPress={() => categoryButtonHandler(item._id)}
               >
@@ -177,12 +135,13 @@ const Home = () => {
                     color: category === item._id ? colors.color2 : "gray",
                   }}
                 >
-                  {item.cateogry}
+                  {item.category}
                 </Text>
-              </Pressable>
+              </Button>
             ))}
           </ScrollView>
         </View>
+
         {/* Products */}
 
         <View style={{ flex: 1 }}>
@@ -193,18 +152,18 @@ const Home = () => {
                 name={item.name}
                 price={item.price}
                 image={item.images[0]?.url}
-                addToCartHandler={addToCartHandler}
+                addToCardHandler={addToCardHandler}
                 id={item._id}
                 key={item._id}
                 i={index}
                 navigate={navigate}
-              ></ProductCard>
+              />
             ))}
           </ScrollView>
         </View>
       </View>
 
-      <Footer activeRoute={"home"}></Footer>
+      <Footer activeRoute={"home"} />
     </>
   );
 };

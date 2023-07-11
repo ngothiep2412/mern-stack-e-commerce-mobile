@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   Dimensions,
   Image,
@@ -13,6 +13,9 @@ import { colors, defaultStyle } from "../styles/styles";
 import Header from "../components/Header";
 import { Avatar } from "react-native-paper";
 import { Toast } from "react-native-toast-message/lib/src/Toast";
+import { useDispatch, useSelector } from "react-redux";
+import { useIsFocused } from "@react-navigation/native";
+import { getProductDetails } from "../redux/actions/productAction";
 
 const SLIDER_WIDTH = Dimensions.get("window").width;
 const ITEM_WIDTH = SLIDER_WIDTH;
@@ -28,33 +31,26 @@ export const iconOptions = {
 
 const ProductDetail = ({ route: { params } }) => {
   const [quantity, setQuantity] = useState(1);
+  const dispatch = useDispatch();
+  const isFocused = useIsFocused();
 
-  const stock = 40;
+  const {
+    product: { name, price, stock, description, images },
+  } = useSelector((state) => state.product);
 
   const isCarousel = useRef(null);
 
-  const images = [
-    {
-      id: "1",
-      url: "https://i.ytimg.com/vi/iUrlaSKGaQ0/maxresdefault.jpg",
-    },
-    {
-      id: "2",
-      url: "https://i.ytimg.com/vi/iUrlaSKGaQ0/maxresdefault.jpg",
-    },
-    {
-      id: "3",
-      url: "https://i.ytimg.com/vi/iUrlaSKGaQ0/maxresdefault.jpg",
-    },
-  ];
-
+  const incrementQty = () => {
+    if (stock <= quantity)
+      return Toast.show({
+        type: "error",
+        text1: "Maximum Value Added",
+      });
+    setQuantity((prev) => prev + 1);
+  };
   const decrementQty = () => {
     if (quantity <= 1) return;
     setQuantity((prev) => prev - 1);
-  };
-  const incrementQty = () => {
-    if (stock <= quantity) return;
-    setQuantity((prev) => prev + 1);
   };
 
   const addToCartHandler = () => {
@@ -63,11 +59,26 @@ const ProductDetail = ({ route: { params } }) => {
         type: "error",
         text1: "Out Of Stock",
       });
+    dispatch({
+      type: "addToCart",
+      payload: {
+        product: params.id,
+        name,
+        price,
+        image: images[0]?.url,
+        stock,
+        quantity,
+      },
+    });
     Toast.show({
       type: "success",
-      text1: "Added To Cart Successfully",
+      text1: "Added To Cart",
     });
   };
+
+  useEffect(() => {
+    dispatch(getProductDetails(params.id));
+  }, [dispatch, isFocused]);
 
   return (
     <View
@@ -96,14 +107,14 @@ const ProductDetail = ({ route: { params } }) => {
         }}
       >
         <Text numberOfLines={2} style={{ fontSize: 25 }}>
-          MacBook Pro
+          {name}
         </Text>
-        <Text style={{ fontSize: 18, fontWeight: "900" }}>123$</Text>
+        <Text style={{ fontSize: 18, fontWeight: "900" }}>{price}$</Text>
         <Text
           numberOfLines={8}
           style={{ letterSpacing: 1, lineHeight: 20, marginVertical: 15 }}
         >
-          "asdasdasdasdasd"
+          {description}
         </Text>
 
         <View
@@ -174,6 +185,7 @@ const styles = StyleSheet.create({
     width: ITEM_WIDTH,
     resizeMode: "contain",
     height: 250,
+    marginTop: 30,
   },
   quantity: {
     backgroundColor: colors.color4,

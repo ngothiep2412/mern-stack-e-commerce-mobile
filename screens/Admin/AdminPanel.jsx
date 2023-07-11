@@ -1,16 +1,26 @@
-import { ScrollView, StyleSheet, Text, View } from "react-native";
+import { View, Text, ScrollView } from "react-native";
 import React from "react";
 import { colors, defaultStyle, formHeading } from "../../styles/styles";
 import Header from "../../components/Header";
 import Loader from "../../components/Loader";
 import ButtonBox from "../../components/ButtonBox";
 import ProductListHeading from "../../components/ProductListHeading";
-import { products } from "../Home";
 import ProductListItem from "../../components/ProductListItem";
 import Chart from "../../components/Chart";
+import { useAdminProducts, useMessageAndErrorOther } from "../../utils/hooks";
+import { useDispatch } from "react-redux";
+import { useIsFocused } from "@react-navigation/native";
+import { deleteProduct } from "../../redux/actions/otherAction";
+import { getAdminProducts } from "../../redux/actions/productAction";
 
 const AdminPanel = ({ navigation }) => {
-  const loading = false;
+  const dispatch = useDispatch();
+  const isFocused = useIsFocused();
+
+  const { loading, products, inStock, outOfStock } = useAdminProducts(
+    dispatch,
+    isFocused
+  );
 
   const navigationHandler = (text) => {
     switch (text) {
@@ -23,38 +33,47 @@ const AdminPanel = ({ navigation }) => {
       case "Product":
         navigation.navigate("newproduct");
         break;
+
       default:
         navigation.navigate("adminorders");
         break;
     }
   };
+
   const deleteProductHandler = (id) => {
-    console.log("Deleting Product with ID:" + id);
+    dispatch(deleteProduct(id));
   };
+
+  const loadingDelete = useMessageAndErrorOther(
+    dispatch,
+    null,
+    null,
+    getAdminProducts
+  );
 
   return (
     <View style={defaultStyle}>
-      <Header back={true}></Header>
-
+      <Header back={true} />
       {/* Heading */}
       <View style={{ paddingTop: 70, marginBottom: 20 }}>
         <Text style={formHeading}>Admin Panel</Text>
       </View>
 
       {loading ? (
-        <Loader></Loader>
+        <Loader />
       ) : (
         <>
+          <View
+            style={{
+              backgroundColor: colors.color3,
+              borderRadius: 20,
+              alignItems: "center",
+            }}
+          >
+            <Chart inStock={inStock} outOfStock={outOfStock} />
+          </View>
+
           <View>
-            <View
-              style={{
-                backgroundColor: colors.color3,
-                borderRadius: 16,
-                alignItems: "center",
-              }}
-            >
-              <Chart inStock={12} outOfStock={2}></Chart>
-            </View>
             <View
               style={{
                 flexDirection: "row",
@@ -66,41 +85,41 @@ const AdminPanel = ({ navigation }) => {
                 icon={"plus"}
                 text={"Product"}
                 handler={navigationHandler}
-              ></ButtonBox>
+              />
 
               <ButtonBox
                 icon={"format-list-bulleted-square"}
                 text={"All Orders"}
                 handler={navigationHandler}
                 reverse={true}
-              ></ButtonBox>
-
+              />
               <ButtonBox
                 icon={"plus"}
                 text={"Category"}
                 handler={navigationHandler}
-              ></ButtonBox>
+              />
             </View>
           </View>
 
-          <ProductListHeading></ProductListHeading>
+          <ProductListHeading />
 
           <ScrollView showsVerticalScrollIndicator={false}>
             <View>
-              {products.map((item, index) => (
-                <ProductListItem
-                  navigate={navigation}
-                  deleteProductHandler={deleteProductHandler}
-                  key={item._id}
-                  i={index}
-                  id={item._id}
-                  price={item.price}
-                  stock={item.stock}
-                  name={item.name}
-                  category={item.category}
-                  imgSrc={item.images[0].url}
-                ></ProductListItem>
-              ))}
+              {!loadingDelete &&
+                products.map((item, index) => (
+                  <ProductListItem
+                    navigate={navigation}
+                    deleteHandler={deleteProductHandler}
+                    key={item._id}
+                    id={item._id}
+                    i={index}
+                    price={item.price}
+                    stock={item.stock}
+                    name={item.name}
+                    category={item.category?.category}
+                    imgSrc={item.images[0].url}
+                  />
+                ))}
             </View>
           </ScrollView>
         </>
@@ -110,5 +129,3 @@ const AdminPanel = ({ navigation }) => {
 };
 
 export default AdminPanel;
-
-const styles = StyleSheet.create({});

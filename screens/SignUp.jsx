@@ -17,8 +17,10 @@ import {
 } from "../styles/styles";
 import { Avatar, TextInput } from "react-native-paper";
 import Footer from "../components/Footer";
-
-const loading = false;
+import { useDispatch } from "react-redux";
+import { useMessageAndErrorUser } from "../utils/hooks";
+import mime from "mime";
+import { register } from "../redux/actions/userAction";
 
 const SignUp = ({ navigation, route }) => {
   const [email, setEmail] = useState("");
@@ -33,8 +35,29 @@ const SignUp = ({ navigation, route }) => {
   const disableBtn =
     !name || !password || !email || !address || !city || !country || !pinCode;
 
+  const dispatch = useDispatch();
+
+  const loading = useMessageAndErrorUser(navigation, dispatch, "profile");
+
   const submitHandler = () => {
-    alert("yeah");
+    const myForm = new FormData();
+    myForm.append("name", name);
+    myForm.append("email", email);
+    myForm.append("password", password);
+    myForm.append("address", address);
+    myForm.append("city", city);
+    myForm.append("country", country);
+    myForm.append("pinCode", pinCode);
+
+    if (avatar !== "") {
+      myForm.append("file", {
+        uri: avatar,
+        type: mime.getType(avatar),
+        name: avatar.split("/").pop(),
+      });
+    }
+
+    dispatch(register(myForm));
   };
 
   useEffect(() => {

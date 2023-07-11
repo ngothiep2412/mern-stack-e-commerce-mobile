@@ -83,7 +83,7 @@ const CameraComponent = ({ navigation, route }) => {
     <View style={{ flex: 1 }}>
       <Camera
         type={type}
-        style={{ flex: 1, aspectRatio }}
+        style={{ flex: 1 }}
         ratio={"1:1"}
         ref={(e) => setCamera(e)}
       ></Camera>

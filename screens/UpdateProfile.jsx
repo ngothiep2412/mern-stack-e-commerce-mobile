@@ -15,22 +15,31 @@ import {
 } from "../styles/styles";
 import { TextInput } from "react-native-paper";
 import Header from "../components/Header";
+import { useDispatch, useSelector } from "react-redux";
+import { useMessageAndErrorOther } from "../utils/hooks";
+import { updateProfile } from "../redux/actions/otherAction";
 
 const loading = false;
 
 const UpdateProfile = ({ navigation }) => {
-  const [email, setEmail] = useState("");
-  const [name, setName] = useState("");
-  const [address, setAddress] = useState("");
-  const [city, setCity] = useState("");
-  const [country, setCountry] = useState("");
-  const [pinCode, setPinCode] = useState("");
+  const { user } = useSelector((state) => state.user);
+
+  const [email, setEmail] = useState(user?.email);
+  const [name, setName] = useState(user?.name);
+  const [address, setAddress] = useState(user?.address);
+  const [city, setCity] = useState(user?.city);
+  const [country, setCountry] = useState(user?.country);
+  const [pinCode, setPinCode] = useState(user?.pinCode.toString());
 
   const disableBtn =
     !name || !email || !address || !city || !country || !pinCode;
 
+  const dispatch = useDispatch();
+
+  const loading = useMessageAndErrorOther(dispatch, navigation, "profile");
+
   const submitHandler = () => {
-    alert("yeah");
+    dispatch(updateProfile(name, email, address, city, country, pinCode));
   };
 
   return (
